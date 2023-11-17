@@ -28,7 +28,7 @@ const EmployeeForm = () => {
       });
 
       if (res.ok) {
-        router.push("/");
+        router.push("/employee");
         form.resetFields(); // Reset form fields after submission
       } else {
         const err = await res.json();
