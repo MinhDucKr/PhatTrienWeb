@@ -1,6 +1,8 @@
 import Navbar from "@/components/Navbar";
 import "./globals.css";
 import { Inter } from "next/font/google";
+import StyledComponentsRegistry from "../libs/AntdRegistry";
+import LayoutCustom from "./default-layout";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -13,10 +15,9 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body className={inter.className}>
-        <div className="max-w-3xl mx-auto p-4">
-          <Navbar />
-          <div className="mt-8">{children}</div>
-        </div>
+        <StyledComponentsRegistry>
+          <LayoutCustom>{children}</LayoutCustom>
+        </StyledComponentsRegistry>
       </body>
     </html>
   );
