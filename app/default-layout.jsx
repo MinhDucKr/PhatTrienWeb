@@ -1,12 +1,12 @@
 "use client";
-import React, { useState } from "react";
 import {
   MenuFoldOutlined,
   MenuUnfoldOutlined,
-  UserOutlined,
   TagOutlined,
+  UserOutlined,
 } from "@ant-design/icons";
-import { Layout, Menu, Button, theme, Avatar } from "antd";
+import { Avatar, Button, Layout, Menu } from "antd";
+import { useState } from "react";
 const { Header, Sider, Content } = Layout;
 const LayoutCustom = ({ children }) => {
   const [collapsed, setCollapsed] = useState(false);
@@ -50,14 +50,14 @@ const LayoutCustom = ({ children }) => {
               style={{
                 fontSize: "16px",
                 width: 64,
-                height: 64,
+                height: "100%",
               }}
             />
             <div className="flex gap-2">
               <Avatar shape="square" size="large" icon={<UserOutlined />} />
               <div className="flex flex-col justify-start">
-                <p>Dương Minh Đức </p>
-                <p className="text-red-500">Manager</p>
+                <p className="m-0">Dương Minh Đức </p>
+                <p className="text-red-500 mt-2">Manager</p>
               </div>
             </div>
           </div>

@@ -1,46 +1,61 @@
 "use client";
-import React, { useState } from "react";
-import { Button, Table } from "antd";
+import React, { useEffect, useState } from "react";
+import { Button, Spin, Table } from "antd";
 import Link from "next/link";
 import { DeleteOutlined, EditOutlined, PlusOutlined } from "@ant-design/icons";
 import { useRouter } from "next/navigation";
 import ModalDeleteEmployee from "./Modal/delete";
 
-const data = [
-  {
-    id: "NV001",
-    name: "Dương Minh Đức",
-    role: "Manager",
-    phone_number: "0877653450",
-    address: "Định Công, Hoàng Mai, Hà Nội",
-    action: "",
-  },
-  {
-    id: "NV002",
-    name: "Dương Minh Đức",
-    role: "Manager",
-    phone_number: "0877653450",
-    address: "Định Công, Hoàng Mai, Hà Nội",
-    action: "",
-  },
-  {
-    id: "NV003",
-    name: "Dương Minh Đức",
-    role: "Manager",
-    phone_number: "0877653450",
-    address: "Định Công, Hoàng Mai, Hà Nội",
-    action: "",
-  },
-];
-
 const TableCustom = () => {
   const router = useRouter();
+  const [loading, setLoading] = useState(false);
+  const [employees, setEmployees] = useState([]);
+  const [recordClicked, setRecordClicked] = useState();
+
+  const getListEmployee = async () => {
+    try {
+      setLoading(true);
+      const res = await fetch("/api/employee", {
+        cache: "no-store",
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        setEmployees(data.employees);
+      } else {
+        throw new Error("Failed to get list employee");
+      }
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoading(false); // Set loading back to false after API call completes (whether success or failure)
+    }
+  };
+
+  // run init
+  useEffect(() => {
+    getListEmployee();
+  }, []);
 
   // state modal
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const handleOk = () => {
-    setIsModalOpen(false);
+  const handleDeleteEmployee = async (id) => {
+    try {
+      setLoading(true);
+      const res = await fetch(`/api/employee?id=${id}`, {
+        method: "DELETE",
+      });
+      if (res.ok) {
+        setIsModalOpen(false);
+        getListEmployee();
+      }
+    } catch (error) {
+      console.error("Error:", error);
+    } finally {
+      setIsModalOpen(false);
+      setLoading(false);
+    }
   };
 
   const handleCancel = () => {
@@ -82,11 +97,14 @@ const TableCustom = () => {
       render: (_, record) => {
         return (
           <div className="flex items-center">
-            <Link href={"/employee/edit/1223"}>
+            <Link href={`/employee/edit/${record?._id}`}>
               <EditOutlined className="text-lg text-[#718098] cursor-pointer" />
             </Link>
             <DeleteOutlined
-              onClick={() => setIsModalOpen(true)}
+              onClick={() => {
+                setIsModalOpen(true);
+                setRecordClicked(record);
+              }}
               className="ml-8 text-lg text-[#718098] cursor-pointer w-5 h-5"
             />
           </div>
@@ -94,27 +112,31 @@ const TableCustom = () => {
       },
     },
   ];
+
   return (
-    <div>
+    <Spin spinning={loading}>
       <ModalDeleteEmployee
         isModalOpen={isModalOpen}
-        onOk={handleOk}
+        onOk={handleDeleteEmployee}
         onCancel={handleCancel}
+        record={recordClicked}
       />
-      <h1 className="text-center font-bold text-lg">DANH MỤC NHÂN VIÊN</h1>
-      <div className="my-4">
-        <Button
-          onClick={() => router.push("/employee/add-new")}
-          className="ml-auto"
-          style={{ display: "block" }}
-          type="primary"
-          icon={<PlusOutlined />}
-        >
-          Thêm nhân viên
-        </Button>
+      <div>
+        <h1 className="text-center font-bold text-lg">DANH MỤC NHÂN VIÊN</h1>
+        <div className="my-4">
+          <Button
+            onClick={() => router.push("/employee/add-new")}
+            className="ml-auto"
+            style={{ display: "block" }}
+            type="primary"
+            icon={<PlusOutlined />}
+          >
+            Thêm nhân viên
+          </Button>
+        </div>
+        <Table columns={columns} dataSource={employees} rowKey={"_id"} />
       </div>
-      <Table columns={columns} dataSource={data} rowKey={"id"} />
-    </div>
+    </Spin>
   );
 };
 export default TableCustom;

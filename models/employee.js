@@ -2,8 +2,11 @@ import mongoose, { Schema } from "mongoose";
 
 const employeeSchema = new Schema(
   {
-    title: String,
-    description: String,
+    id: String,
+    name: String,
+    role: String,
+    phone_number: String,
+    address: String,
   },
   {
     timestamps: true,
