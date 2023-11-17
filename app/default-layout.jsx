@@ -6,6 +6,7 @@ import {
   UserOutlined,
 } from "@ant-design/icons";
 import { Avatar, Button, Layout, Menu } from "antd";
+import Link from "next/link";
 import { useState } from "react";
 const { Header, Sider, Content } = Layout;
 const LayoutCustom = ({ children }) => {
@@ -15,17 +16,17 @@ const LayoutCustom = ({ children }) => {
     {
       key: "1",
       icon: <TagOutlined />,
-      label: "Sản phẩm",
+      label: <Link href="/product">Sản phẩm</Link>,
     },
     {
       key: "2",
       icon: <UserOutlined />,
-      label: "Nhân viên",
+      label: <Link href="/employee">Nhân viên</Link>,
     },
   ];
 
   return (
-    <Layout>
+    <Layout className="h-screen">
       <Sider
         style={{ backgroundColor: "#fff" }}
         trigger={null}
