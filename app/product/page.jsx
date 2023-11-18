@@ -1,8 +1,10 @@
 "use client";
-import { PlusOutlined } from "@ant-design/icons";
 import { Button, Spin, Table, Tag } from "antd";
+import { DeleteOutlined, EditOutlined, PlusOutlined } from "@ant-design/icons";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import ModalDeleteEmployee from "../../components/Modal/delete";
+import Link from "next/link";
 
 const formatToVND = (amount) => {
   // Create an Intl.NumberFormat object with Vietnamese locale and currency style
@@ -49,15 +51,15 @@ const ProductPage = () => {
   // state modal
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const handleDeleteEmployee = async (id) => {
+  const handleDeleteProduct = async (id) => {
     try {
       setLoading(true);
-      const res = await fetch(`/api/employee?id=${id}`, {
+      const res = await fetch(`/api/product?id=${id}`, {
         method: "DELETE",
       });
       if (res.ok) {
         setIsModalOpen(false);
-        getListEmployee();
+        getListProduct();
       }
     } catch (error) {
       console.error("Error:", error);
@@ -65,6 +67,9 @@ const ProductPage = () => {
       setIsModalOpen(false);
       setLoading(false);
     }
+  };
+  const handleCancel = () => {
+    setIsModalOpen(false);
   };
 
   // define column
@@ -114,62 +119,38 @@ const ProductPage = () => {
         </Tag>
       ),
     },
-    // {
-    //   title: "Hành động",
-    //   key: "action",
-    //   dataIndex: "action",
-    //   render: (_, record) => {
-    //     return (
-    //       <div className="flex items-center">
-    //         <Link href={`/employee/edit/${record?._id}`}>
-    //           <EditOutlined className="text-lg text-[#718098] cursor-pointer" />
-    //         </Link>
-    //         <DeleteOutlined
-    //           onClick={() => {
-    //             setIsModalOpen(true);
-    //             setRecordClicked(record);
-    //           }}
-    //           className="ml-8 text-lg text-[#718098] cursor-pointer w-5 h-5"
-    //         />
-    //       </div>
-    //     );
-    //   },
-    // },
-  ];
-
-  const data = [
     {
-      id: "CIMAX-CM02",
-      name: "Keo ốp lát tiêu chuẩn",
-      price: "150,000",
-      quantity: "300",
-      status: "1",
-    },
-    {
-      id: "CIMAX-CM02",
-      name: "Keo ốp lát tiêu chuẩn",
-      price: "150,000",
-      quantity: "300",
-      status: "2",
-    },
-    {
-      id: "CIMAX-CM02",
-      name: "Keo ốp lát tiêu chuẩn",
-      price: "150,000",
-      quantity: "300",
-      status: "1",
-    },
-    {
-      id: "CIMAX-CM02",
-      name: "Keo ốp lát tiêu chuẩn",
-      price: "150,000",
-      quantity: "300",
-      status: "2",
+      title: "Hành động",
+      key: "action",
+      dataIndex: "action",
+      render: (_, record) => {
+        return (
+          <div className="flex items-center">
+            <Link href={`/product/edit/${record?._id}`}>
+              <EditOutlined className="text-lg text-[#718098] cursor-pointer" />
+            </Link>
+            <DeleteOutlined
+              onClick={() => {
+                setIsModalOpen(true);
+                setRecordClicked(record);
+              }}
+              className="ml-8 text-lg text-[#718098] cursor-pointer w-5 h-5"
+            />
+          </div>
+        );
+      },
     },
   ];
 
   return (
     <Spin spinning={loading}>
+      <ModalDeleteEmployee
+        isModalOpen={isModalOpen}
+        onOk={handleDeleteProduct}
+        onCancel={handleCancel}
+        record={recordClicked}
+        isProduct
+      />
       <div>
         <h1 className="text-center font-bold text-lg">DANH MỤC SẢN PHẨM </h1>
         <div className="my-4">

@@ -63,7 +63,7 @@ const EmployeeForm = ({ params }) => {
 
       if (res.ok) {
         form.resetFields(); // Reset form fields after submission
-        router.push("/");
+        router.push("/employee");
       } else {
         const err = await res.json();
         setExist(err.message);

@@ -1,16 +1,17 @@
 "use client";
 import { Button, Form, Input, Select, Spin, Upload, notification } from "antd";
 import { useRouter } from "next/navigation";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 const { Option } = Select;
 
-const AddProductForm = () => {
+const UpdateProductPage = ({ params }) => {
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
   const router = useRouter();
   const [previewImage, setPreviewImage] = useState(null);
   const [imageUrl, setImageUrl] = useState(null);
+  const [productData, setProductData] = useState(null);
 
   const [api, contextHolder] = notification.useNotification();
   const openNotificationWithIcon = (type) => {
@@ -20,9 +21,40 @@ const AddProductForm = () => {
         "Tạo mới sản phầm không thành công. Mã sản phẩm tạo đã được sử dụng, vui lòng chọn mã sản phầm khác",
     });
   };
+  // update product
+  const { id } = params;
+  useEffect(() => {
+    const getProductById = async () => {
+      try {
+        setLoading(true);
+        const response = await fetch(`/api/product/${id}`, {
+          cache: "no-store",
+        });
+
+        if (response.ok) {
+          const { product } = await response.json();
+          setPreviewImage(product.image_path);
+          setImageUrl(product.image_path);
+
+          setProductData(product);
+          form.setFieldsValue(product);
+        } else {
+          setProductData(null);
+        }
+      } catch (error) {
+        setProductData(null);
+        console.error("Error:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    // Call the function to fetch employee details when the ID changes
+    getProductById();
+  }, [id]);
 
   const onFinish = async (values) => {
-    const newProduct = {
+    const updateProduct = {
       id: values.id,
       name: values.name,
       price: values.price,
@@ -32,16 +64,16 @@ const AddProductForm = () => {
     };
     try {
       setLoading(true);
-      const res = await fetch("/api/product", {
-        method: "POST",
+      const res = await fetch(`/api/product/${id}`, {
+        method: "PUT",
         headers: {
           "Content-type": "application/json",
         },
-        body: JSON.stringify(newProduct),
+        body: JSON.stringify(updateProduct),
       });
 
       if (res.ok) {
-        router.push("/");
+        router.push("/product");
         form.resetFields(); // Reset form fields after submission
       } else {
         const err = await res.json();
@@ -118,7 +150,7 @@ const AddProductForm = () => {
       {contextHolder}
       <div>
         <h1 className="text-center font-bold text-lg mb-4">
-          THÊM MỚI SẢN PHẨM{" "}
+          CẬP NHẬT SẢN PHẨM{" "}
         </h1>
 
         <Form form={form} layout="vertical" onFinish={onFinish}>
@@ -127,7 +159,7 @@ const AddProductForm = () => {
             label="Mã sản phẩm"
             rules={[{ required: true, message: "Please enter ID" }]}
           >
-            <Input />
+            <Input disabled />
           </Form.Item>
           <Form.Item
             name="name"
@@ -136,7 +168,7 @@ const AddProductForm = () => {
           >
             <Input />
           </Form.Item>
-          <Form.Item name="image" label="Hình ảnh sản phẩm">
+          <Form.Item name="image" label="Image">
             <div>
               <Upload
                 name="file"
@@ -181,7 +213,7 @@ const AddProductForm = () => {
           </Form.Item>
           <Form.Item>
             <Button type="primary" htmlType="submit">
-              Thêm mới
+              Cập nhật sản phẩm
             </Button>
           </Form.Item>
         </Form>
@@ -190,4 +222,4 @@ const AddProductForm = () => {
   );
 };
 
-export default AddProductForm;
+export default UpdateProductPage;
