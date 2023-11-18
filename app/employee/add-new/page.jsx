@@ -1,6 +1,6 @@
 "use client";
 import React, { useState } from "react";
-import { Form, Input, Button, Select, Spin } from "antd";
+import { Form, Input, Button, Select, Spin, notification } from "antd";
 import { useRouter } from "next/navigation";
 
 const EmployeeForm = () => {
@@ -8,6 +8,15 @@ const EmployeeForm = () => {
   const [loading, setLoading] = useState(false);
   const [exist, setExist] = useState("");
   const router = useRouter();
+
+  const [api, contextHolder] = notification.useNotification();
+  const openNotificationWithIcon = (type) => {
+    api[type]({
+      message: "Xảy ra lỗi",
+      description:
+        "Tạo mới nhân viên không thành công. Mã sản phẩm tạo đã được sử dụng, vui lòng chọn mã nhân viên khác",
+    });
+  };
 
   const onFinish = async (values) => {
     const newEmployee = {
@@ -32,7 +41,8 @@ const EmployeeForm = () => {
         form.resetFields(); // Reset form fields after submission
       } else {
         const err = await res.json();
-        setExist(err.message);
+        form.resetFields(); // Reset form fields after submission
+        openNotificationWithIcon("error");
         throw new Error("Failed to create a employee");
       }
     } catch (error) {
@@ -44,6 +54,7 @@ const EmployeeForm = () => {
 
   return (
     <div>
+      {contextHolder}
       <h1 className="text-center font-bold text-lg mb-4">THÊM MỚI NHÂN VIÊN</h1>
       <Spin spinning={loading}>
         <Form
@@ -58,7 +69,6 @@ const EmployeeForm = () => {
             rules={[{ required: true }]}
           >
             <Input />
-            {!!exist && <p className="text-red-500">{exist}</p>}
           </Form.Item>
           <Form.Item
             name="name"

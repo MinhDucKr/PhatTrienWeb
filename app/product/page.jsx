@@ -32,7 +32,7 @@ const ProductPage = () => {
         const data = await res.json();
         setProducts(data.product);
       } else {
-        throw new Error("Failed to get list employee");
+        throw new Error("Failed to get list product");
       }
     } catch (error) {
       console.log(error);
@@ -67,10 +67,6 @@ const ProductPage = () => {
     }
   };
 
-  const handleCancel = () => {
-    setIsModalOpen(false);
-  };
-
   // define column
   const columns = [
     {
@@ -83,6 +79,19 @@ const ProductPage = () => {
       title: "Tên sản phẩm",
       dataIndex: "name",
       key: "name",
+    },
+    {
+      title: "Hình ảnh sản phẩm",
+      dataIndex: "image_path",
+      key: "image_path",
+      render: (path) => (
+        <img
+          loading="lazy"
+          src={path}
+          alt="img"
+          className="h-12 w-12 text-center"
+        />
+      ),
     },
     {
       title: "Đơn giá",

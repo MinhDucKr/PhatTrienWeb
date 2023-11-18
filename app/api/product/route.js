@@ -3,7 +3,8 @@ import Product from "../../../models/product";
 import { NextResponse } from "next/server";
 
 export async function POST(request) {
-  const { id, name, price, description, quantity } = await request.json();
+  const { id, name, price, description, quantity, image_path } =
+    await request.json();
   await connectMongoDB();
   const existingProduct = await Product.findOne({ id });
 
@@ -13,7 +14,7 @@ export async function POST(request) {
       { status: 400 }
     );
   }
-  await Product.create({ id, name, price, description, quantity });
+  await Product.create({ id, name, price, description, quantity, image_path });
   return NextResponse.json({ message: "Product Created" }, { status: 201 });
 }
 
